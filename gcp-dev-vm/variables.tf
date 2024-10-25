@@ -1,3 +1,4 @@
+# Google Cloud Platform
 variable "credentials_path" {
   type = string
 }
@@ -58,5 +59,18 @@ variable "ssh_public_key_path" {
 }
 
 variable "ssh_private_key_path" {
+  type = string
+}
+
+# Cloudflare
+variable "cloudflare_api_token" {
+  type = string
+}
+
+variable "cloudflare_zone_id" {
+  type = string
+}
+
+variable "dns_name" {
   type = string
 }

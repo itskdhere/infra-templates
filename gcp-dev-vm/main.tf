@@ -1,4 +1,4 @@
-resource "google_compute_instance" "dev" {
+resource "google_compute_instance" "dev-vm" {
   name         = var.vm_name
   zone         = var.zone
   machine_type = var.vm_type
@@ -53,5 +53,48 @@ resource "google_compute_instance" "dev" {
 
   labels = {
     goog-ec-src = "vm_add-tf"
+  }
+}
+
+resource "cloudflare_record" "dev-vm-dns" {
+  depends_on = [google_compute_instance.dev-vm]
+  zone_id    = var.cloudflare_zone_id
+  name       = var.dns_name
+  content    = google_compute_instance.dev-vm.network_interface.0.access_config.0.nat_ip
+  type       = "A"
+  proxied    = false
+  # priority   = 420
+  # ttl        = 3600
+  comment = "DNS Record of dev VM (via Terraform)"
+}
+
+resource "null_resource" "dev-vm_setup" {
+  depends_on = [google_compute_instance.dev-vm]
+
+  triggers = {
+    instance_id = google_compute_instance.dev-vm.id
+  }
+
+  connection {
+    type        = "ssh"
+    user        = var.ssh_username
+    private_key = file(var.ssh_private_key_path)
+    host        = google_compute_instance.dev-vm.network_interface.0.access_config.0.nat_ip
+  }
+
+  provisioner "file" {
+    when        = create
+    on_failure  = continue
+    source      = "setup.sh"
+    destination = "/tmp/setup.sh"
+  }
+
+  provisioner "remote-exec" {
+    when       = create
+    on_failure = continue
+    inline = [
+      "chmod +x /tmp/setup.sh",
+      "/tmp/setup.sh"
+    ]
   }
 }

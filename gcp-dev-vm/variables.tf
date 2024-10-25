@@ -74,3 +74,12 @@ variable "cloudflare_zone_id" {
 variable "dns_name" {
   type = string
 }
+
+# Tailscale
+variable "tailscale_auth_key" {
+  type = string
+}
+
+variable "tailscale_api_token" {
+  type = string
+}

@@ -1,3 +1,4 @@
+# Google Compute Engine VM
 resource "google_compute_instance" "dev-vm" {
   name         = var.vm_name
   zone         = var.zone
@@ -56,6 +57,7 @@ resource "google_compute_instance" "dev-vm" {
   }
 }
 
+# Cloudflare DNS Record
 resource "cloudflare_record" "dev-vm-dns" {
   depends_on = [google_compute_instance.dev-vm]
   zone_id    = var.cloudflare_zone_id
@@ -68,7 +70,8 @@ resource "cloudflare_record" "dev-vm-dns" {
   comment = "DNS Record of dev VM (via Terraform)"
 }
 
-resource "null_resource" "dev-vm_setup" {
+# VM Setup with Docker & Tailscale
+resource "null_resource" "dev-vm-setup" {
   depends_on = [google_compute_instance.dev-vm]
 
   triggers = {
@@ -95,6 +98,15 @@ resource "null_resource" "dev-vm_setup" {
     inline = [
       "chmod +x /tmp/setup.sh",
       "/tmp/setup.sh"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    when       = create
+    on_failure = continue
+    inline = [
+      "sudo tailscale up --auth-key=${var.tailscale_auth_key}",
+      "sudo tailscale set --ssh --advertise-exit-node"
     ]
   }
 }

@@ -70,9 +70,18 @@ resource "cloudflare_record" "dev-vm-dns" {
   comment = "DNS Record of dev VM (via Terraform)"
 }
 
+# Tailscale Non-Interactive Machine Auth Key Retrieval
+resource "tailscale_tailnet_key" "dev-vm-tailscale-key" {
+  reusable      = false
+  ephemeral     = true
+  preauthorized = false
+  expiry        = 900
+  description   = "Tailscale Auth Key for dev VM"
+}
+
 # VM Setup with Docker & Tailscale
 resource "null_resource" "dev-vm-setup" {
-  depends_on = [google_compute_instance.dev-vm]
+  depends_on = [google_compute_instance.dev-vm, tailscale_tailnet_key.dev-vm-tailscale-key]
 
   triggers = {
     instance_id = google_compute_instance.dev-vm.id
@@ -105,7 +114,8 @@ resource "null_resource" "dev-vm-setup" {
     when       = create
     on_failure = continue
     inline = [
-      "sudo tailscale up --auth-key=${var.tailscale_auth_key}",
+      # "sudo tailscale up --auth-key=${var.tailscale_auth_key}",
+      "sudo tailscale up --auth-key=${tailscale_tailnet_key.dev-vm-tailscale-key.key}",
       "sudo tailscale set --ssh --advertise-exit-node"
     ]
   }

@@ -12,6 +12,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "4.44.0"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.17.2"
+    }
   }
 }
 
@@ -24,4 +28,9 @@ provider "google" {
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+provider "tailscale" {
+  api_key = var.tailscale_api_token
+  tailnet = var.tailscale_network
 }

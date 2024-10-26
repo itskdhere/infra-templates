@@ -83,3 +83,7 @@ variable "tailscale_auth_key" {
 variable "tailscale_api_token" {
   type = string
 }
+
+variable "tailscale_network" {
+  type = string
+}

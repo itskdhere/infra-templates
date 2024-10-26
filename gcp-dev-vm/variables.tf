@@ -76,9 +76,9 @@ variable "dns_name" {
 }
 
 # Tailscale
-variable "tailscale_auth_key" {
-  type = string
-}
+# variable "tailscale_auth_key" {
+#   type = string
+# }
 
 variable "tailscale_api_token" {
   type = string

@@ -72,14 +72,15 @@ resource "cloudflare_record" "dev-vm-dns" {
 
 # Tailscale Non-Interactive Machine Auth Key Retrieval
 resource "tailscale_tailnet_key" "dev-vm-tailscale-key" {
+  depends_on    = [google_compute_instance.dev-vm]
   reusable      = false
   ephemeral     = true
   preauthorized = false
-  expiry        = 900
+  expiry        = 1200
   description   = "Tailscale Auth Key for dev VM"
 }
 
-# VM Setup with Docker & Tailscale
+# VM Setup with NVM, Node.js, Docker, Tailscale
 resource "null_resource" "dev-vm-setup" {
   depends_on = [google_compute_instance.dev-vm, tailscale_tailnet_key.dev-vm-tailscale-key]
 
@@ -97,7 +98,7 @@ resource "null_resource" "dev-vm-setup" {
   provisioner "file" {
     when        = create
     on_failure  = continue
-    source      = "setup.sh"
+    source      = "scripts/setup.sh"
     destination = "/tmp/setup.sh"
   }
 
@@ -114,9 +115,17 @@ resource "null_resource" "dev-vm-setup" {
     when       = create
     on_failure = continue
     inline = [
-      # "sudo tailscale up --auth-key=${var.tailscale_auth_key}",
       "sudo tailscale up --auth-key=${tailscale_tailnet_key.dev-vm-tailscale-key.key}",
       "sudo tailscale set --ssh --advertise-exit-node"
     ]
   }
+
+  # provisioner "remote-exec" {
+  #   when       = destroy
+  #   on_failure = continue
+  #   inline = [
+  #     "sudo tailscale down",
+  #     "sudo tailscale logout"
+  #   ]
+  # }
 }

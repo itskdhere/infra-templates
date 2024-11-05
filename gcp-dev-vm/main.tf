@@ -24,7 +24,7 @@ resource "google_compute_instance" "dev-vm" {
     subnetwork  = "projects/${var.project_id}/regions/${var.region}/subnetworks/default"
   }
 
-  can_ip_forward      = false
+  can_ip_forward      = true
   deletion_protection = false
   enable_display      = false
 
@@ -32,7 +32,7 @@ resource "google_compute_instance" "dev-vm" {
 
   shielded_instance_config {
     enable_integrity_monitoring = true
-    enable_secure_boot          = false
+    enable_secure_boot          = true
     enable_vtpm                 = true
   }
 
@@ -55,6 +55,8 @@ resource "google_compute_instance" "dev-vm" {
   labels = {
     goog-ec-src = "vm_add-tf"
   }
+
+  allow_stopping_for_update = true
 }
 
 # Cloudflare DNS Record
@@ -74,8 +76,8 @@ resource "cloudflare_record" "dev-vm-dns" {
 resource "tailscale_tailnet_key" "dev-vm-tailscale-key" {
   depends_on    = [google_compute_instance.dev-vm]
   reusable      = false
-  ephemeral     = true
-  preauthorized = false
+  ephemeral     = false
+  preauthorized = true
   expiry        = 1200
   description   = "Tailscale Auth Key for dev VM"
 }
@@ -119,13 +121,44 @@ resource "null_resource" "dev-vm-setup" {
       "sudo tailscale set --ssh --advertise-exit-node"
     ]
   }
+}
 
-  # provisioner "remote-exec" {
-  #   when       = destroy
-  #   on_failure = continue
-  #   inline = [
-  #     "sudo tailscale down",
-  #     "sudo tailscale logout"
-  #   ]
-  # }
+# Portainer CE Setup via Docker Compose
+resource "null_resource" "portainer-ce" {
+  depends_on = [null_resource.dev-vm-setup]
+
+  triggers = {
+    instance_id = google_compute_instance.dev-vm.id
+  }
+
+  connection {
+    type        = "ssh"
+    user        = var.ssh_username
+    private_key = file(var.ssh_private_key_path)
+    host        = google_compute_instance.dev-vm.network_interface.0.access_config.0.nat_ip
+  }
+
+  provisioner "remote-exec" {
+    when       = create
+    on_failure = continue
+    inline = [
+      "mkdir /home/${var.ssh_username}/portainer-ce"
+    ]
+  }
+
+  provisioner "file" {
+    when        = create
+    on_failure  = continue
+    source      = "../portainer-ce/compose.yaml"
+    destination = "/home/${var.ssh_username}/portainer-ce/compose.yaml"
+  }
+
+  provisioner "remote-exec" {
+    when       = create
+    on_failure = continue
+    inline = [
+      "cd /home/${var.ssh_username}/portainer-ce",
+      "docker compose up -d"
+    ]
+  }
 }

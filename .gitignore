@@ -1,8 +1,11 @@
 # Misc.
+temp/
+tmp/
 **.env
 **.data**
 **data**
 **letsencrypt**
+**pb_data**
 
 # Local .terraform directories
 **/.terraform/*

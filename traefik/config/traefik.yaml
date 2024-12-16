@@ -29,7 +29,7 @@ certificatesResolvers:
   myresolver:
     acme:
       tlsChallenge: {}
-      email: ctf-demo@itskdhere.eu.org
+      email: kd@itskdhere.eu.org
       storage: /letsencrypt/acme.json
   # cloudflare:
   #   acme:

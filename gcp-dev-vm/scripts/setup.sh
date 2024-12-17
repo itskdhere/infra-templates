@@ -2,11 +2,14 @@
 
 echo "Starting..."
 
-# Update and upgrade
+# Set Timezone To Asia/Kolkata
+sudo timedatectl set-timezone Asia/Kolkata
+
+# Update & Upgrade
 sudo apt update
 # sudo apt upgrade -y
 
-# Install basic packages
+# Install Basic Packages
 sudo apt install git htop ncdu neofetch -y
 
 # Install NVM

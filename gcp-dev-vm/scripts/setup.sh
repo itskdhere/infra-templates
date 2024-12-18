@@ -10,7 +10,7 @@ sudo apt update
 # sudo apt upgrade -y
 
 # Install Basic Packages
-sudo apt install git htop ncdu neofetch -y
+sudo apt install dnsutils git htop ncdu neofetch -y
 
 # Install NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash

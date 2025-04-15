@@ -7,12 +7,21 @@ services:
       - "81:81"
       - "443:443"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
     networks:
       - default
 
 networks:
   default:
     name: npm
-    external: true
+    external: false
+    driver: bridge
+
+volumes:
+  npm_data:
+    name: npm_data
+    driver: local
+  npm_letsencrypt:
+    name: npm_letsencrypt
+    driver: local

@@ -1,1 +1,1 @@
-# infra
+# infra-templates

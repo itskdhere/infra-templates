@@ -1,0 +1,17 @@
+# Google Cloud Platform
+credentials_path      = ""
+access_token          = ""
+project_id            = ""
+service_account_email = ""
+ssh_username          = ""
+ssh_public_key_path   = ""
+ssh_private_key_path  = ""
+
+# Cloudflare
+cloudflare_api_token = ""
+cloudflare_zone_id   = ""
+dns_name             = ""
+
+# Tailscale
+tailscale_api_token = ""
+tailscale_network   = ""

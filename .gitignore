@@ -1,11 +1,14 @@
 # Misc.
-temp/
-tmp/
+temp
+tmp
 **.env
 **.data**
 **data**
 **letsencrypt**
-**pb_data**
+**certbot**
+**ssl**
+**log**
+**logs**
 
 pvt.tf
 

@@ -38,7 +38,7 @@ variable "disk_size" {
 
 variable "disk_image" {
   type    = string
-  default = "projects/debian-cloud/global/images/debian-12-bookworm-v20241009"
+  default = "projects/debian-cloud/global/images/debian-12-bookworm-v20250910"
 }
 
 variable "service_account_scopes" {

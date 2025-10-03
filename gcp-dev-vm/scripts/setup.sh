@@ -23,7 +23,7 @@ nvm install lts/jod
 nvm use lts/jod
 
 # Install Some Global npm Packages
-npm install -g yarn pnpm pm2 gtop serve
+npm install -g pm2 gtop serve dsmt
 
 # Install Tailscale
 curl -fsSL https://tailscale.com/install.sh | sh

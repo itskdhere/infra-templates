@@ -5,5 +5,5 @@ output "dev-vm-public-ip" {
 
 output "dev-vm-dns-name" {
   description = "DNS name of the dev VM"
-  value       = cloudflare_record.dev-vm-dns.hostname
+  value       = cloudflare_dns_record.dev-vm-dns.name
 }
